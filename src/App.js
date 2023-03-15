@@ -1,8 +1,8 @@
 // 1. Вывести список из элементов
 // 2. Добавить фильтр по типу продукта (select)
-// 3. Добавить фильтр по диапазону цены (2xinput минимальная/максимальн)
+// 3. Добавить фильтр по диапазону цены (2xinput минимальная/максимальная)
 
-import React, {useState, useMemo} from "react";
+import React, {useState, useMemo, useCallback} from "react";
 import "./styles.css";
 
 const items = [
@@ -17,70 +17,81 @@ const items = [
 ];
 
 export default function App() {
-  const [productFilter, setProductFilter] = useState("");
-  const [minValue, setMinValue] = useState("");
-  const [maxValue, setMaxValue] = useState("");
+  const [filters, setFilters] = useState({
+    type: "",
+    minCost: "",
+    maxCost: "",
+  });
 
-  const filterItems = (productFilter, minValue, maxValue) => {
-    return items.filter(item => {
-      if (productFilter && item.type !== productFilter) {
-        return false;
-      }
+  const ITEM_TYPES = ["fruit", "vegetable", "berry"];
 
-      if (minValue && item.cost < minValue) {
-        return false;
-      }
+  const itemFilter = useCallback((item) => {
+    if (filters.type && item.type !== filters.type) {
+      return false;
+    }
 
-      if (maxValue && item.cost > maxValue) {
-        return false;
-      }
+    if (filters.minCost && item.cost < filters.minCost) {
+      return false;
+    }
 
-      return true;
-    })
-  }
+    if (filters.maxCost && item.cost > filters.maxCost) {
+      return false;
+    }
 
-  const memoizedResultForFilterItems = useMemo(() =>
-    filterItems(productFilter, minValue, maxValue),
-    [productFilter, minValue, maxValue]);
+    return true;
+  }, [filters]);
 
-  const itemsElements = memoizedResultForFilterItems.map(item => (
-    <li key={item.label}>{item.label}: {item.cost}</li>
-  ));
+  const itemsFiltered = useMemo(() => {
+    return items.filter(itemFilter);
+  }, [filters]);
 
   return (
-  <div>
-    <p>Min</p>
-    <input onChange={(e) => setMinValue(e.target.value)}/>
-    <p>Max</p>
-    <input onChange={(e) => setMaxValue(e.target.value)}/>
+    <div>
+      <p>Min</p>
+      <input onChange={(e) =>
+        setFilters((prevState) => {
+          return {...prevState, minCost: e.target.value}
+        })
+      }/>
 
-    <br/>
-    <br/>
+      <p>Max</p>
+      <input onChange={(e) =>
+        setFilters((prevState) => {
+          return {...prevState, maxCost: e.target.value}
+        })
+      }/>
 
-    <button onClick={() => {
-      setProductFilter("fruit");
-    }}>
-      fruits
-    </button>
-    <button onClick={() => {
-      setProductFilter("vegetable");
-    }}>
-      vegetables
-    </button>
-    <button onClick={() => {
-      setProductFilter("berry");
-    }}>
-      berries
-    </button>
-    <button onClick={() => {
-      setProductFilter("");
-    }}>
-      all
-    </button>
+      <br/>
+      <br/>
 
-    <ul>
-      {itemsElements}
-    </ul>
+      {
+        ITEM_TYPES.map(itemType => (
+          <button key={itemType} onClick={() =>
+            setFilters((prevState) => {
+              return {...prevState, type: itemType}
+            })
+          }>
+            { itemType }
+          </button>
+        ))
+      }
 
-  </div>);
+      <button onClick={() =>
+        setFilters((prevState) => {
+          return {...prevState, type: ""}
+        })
+      }>
+        all
+      </button>
+
+      <ul>
+        {
+          itemsFiltered.map(item => (
+            <li key={item.label}>{item.label}: {item.cost}</li>
+          ))
+        }
+      </ul>
+
+    </div>
+  );
 }
