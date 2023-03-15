@@ -16,14 +16,18 @@ const items = [
   { label: "Blackberry", cost: 40, type: "berry" }
 ];
 
+const ITEM_TYPES = ["fruit", "vegetable", "berry"];
+
+const isNotValidNumberInput = (inputValue) => {
+  return Number.isNaN(Number(inputValue));
+}
+
 export default function App() {
   const [filters, setFilters] = useState({
     type: "",
     minCost: "",
     maxCost: "",
   });
-
-  const ITEM_TYPES = ["fruit", "vegetable", "berry"];
 
   const itemFilter = useCallback((item) => {
     if (filters.type && item.type !== filters.type) {
@@ -44,10 +48,6 @@ export default function App() {
   const itemsFiltered = useMemo(() => {
     return items.filter(itemFilter);
   }, [filters]);
-
-  const isNotValidNumberInput = (inputValue) => {
-    return Number.isNaN(Number(inputValue));
-  }
 
   return (
     <div>
