@@ -45,21 +45,34 @@ export default function App() {
     return items.filter(itemFilter);
   }, [filters]);
 
+  const isNotValidNumberInput = (inputValue) => {
+    return Number.isNaN(Number(inputValue));
+  }
+
   return (
     <div>
-      <p>Min</p>
+      <p>Min cost</p>
       <input onChange={(e) =>
         setFilters((prevState) => {
           return {...prevState, minCost: e.target.value}
         })
       }/>
+      {
+        isNotValidNumberInput(filters.minCost) &&
+        <p>Input value must be number</p>
+      }
 
-      <p>Max</p>
+      <p>Max cost</p>
       <input onChange={(e) =>
         setFilters((prevState) => {
           return {...prevState, maxCost: e.target.value}
         })
       }/>
+      {
+        isNotValidNumberInput(filters.maxCost) &&
+        <p>Input value must be number</p>
+      }
+
 
       <br/>
       <br/>
