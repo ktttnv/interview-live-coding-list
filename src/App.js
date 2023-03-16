@@ -66,41 +66,30 @@ export default function App() {
     <div>
       <p>Min cost</p>
       <input onChange={(e) => handleFilterChange("minCost", e.target.value)}/>
-      {
-        !isNumber(filters.minCost) &&
-        <span>Input value must be number</span>
-      }
+      {!isNumber(filters.minCost) && <span>Input value must be number</span>}
 
       <p>Max cost</p>
       <input onChange={(e) => handleFilterChange("maxCost", e.target.value)}/>
-      {
-        !isNumber(filters.maxCost) &&
-        <span>Input value must be number</span>
-      }
+      {!isNumber(filters.maxCost) && <span>Input value must be number</span>}
 
       <br/>
       <br/>
 
-      {
-        ITEM_TYPES_ARRAY.map(itemType => (
-          <button key={itemType} onClick={() => handleFilterChange("type", itemType)}>
-            {itemType}
-          </button>
-        ))
-      }
+      {ITEM_TYPES_ARRAY.map(itemType => (
+        <button key={itemType} onClick={() => handleFilterChange("type", itemType)}>
+          {itemType}
+        </button>
+      ))}
 
       <button onClick={() => handleFilterChange("type", "")}>
         all
       </button>
 
       <ul>
-        {
-          itemsFiltered.map(item => (
-            <li key={item.label}>{item.label}: {item.cost}</li>
-          ))
-        }
+        {itemsFiltered.map(item => (
+          <li key={item.label}>{item.label}: {item.cost}</li>
+        ))}
       </ul>
-
     </div>
   );
 }
