@@ -16,10 +16,16 @@ const items = [
   { label: "Blackberry", cost: 40, type: "berry" }
 ];
 
-const ITEM_TYPES = ["fruit", "vegetable", "berry"];
+const ITEM_TYPES = {
+  Fruit: "fruit",
+  Vegetable: "vegetable",
+  Berry: "berry",
+}
 
-const isNotValidNumberInput = (inputValue) => {
-  return Number.isNaN(Number(inputValue));
+const ITEM_TYPES_ARRAY = Object.values(ITEM_TYPES);
+
+const isNumber = (value) => {
+  return !Number.isNaN(Number(value));
 }
 
 export default function App() {
@@ -34,11 +40,11 @@ export default function App() {
       return false;
     }
 
-    if (filters.minCost && item.cost < filters.minCost) {
+    if (filters.minCost && isNumber(filters.minCost) && item.cost < filters.minCost) {
       return false;
     }
 
-    if (filters.maxCost && item.cost > filters.maxCost) {
+    if (filters.maxCost && isNumber(filters.maxCost) && item.cost > filters.maxCost) {
       return false;
     }
 
@@ -49,51 +55,41 @@ export default function App() {
     return items.filter(itemFilter);
   }, [filters]);
 
+  const handleFilterChange = (key, value) => {
+    setFilters((prevState) => ({
+      ...prevState,
+      [key]: value,
+    }));
+  }
+
   return (
     <div>
       <p>Min cost</p>
-      <input onChange={(e) =>
-        setFilters((prevState) => {
-          return {...prevState, minCost: e.target.value}
-        })
-      }/>
+      <input onChange={(e) => handleFilterChange("minCost", e.target.value)}/>
       {
-        isNotValidNumberInput(filters.minCost) &&
-        <p>Input value must be number</p>
+        !isNumber(filters.minCost) &&
+        <span>Input value must be number</span>
       }
 
       <p>Max cost</p>
-      <input onChange={(e) =>
-        setFilters((prevState) => {
-          return {...prevState, maxCost: e.target.value}
-        })
-      }/>
+      <input onChange={(e) => handleFilterChange("maxCost", e.target.value)}/>
       {
-        isNotValidNumberInput(filters.maxCost) &&
-        <p>Input value must be number</p>
+        !isNumber(filters.maxCost) &&
+        <span>Input value must be number</span>
       }
 
-
       <br/>
       <br/>
 
       {
-        ITEM_TYPES.map(itemType => (
-          <button key={itemType} onClick={() =>
-            setFilters((prevState) => {
-              return {...prevState, type: itemType}
-            })
-          }>
-            { itemType }
+        ITEM_TYPES_ARRAY.map(itemType => (
+          <button key={itemType} onClick={() => handleFilterChange("type", itemType)}>
+            {itemType}
           </button>
         ))
       }
 
-      <button onClick={() =>
-        setFilters((prevState) => {
-          return {...prevState, type: ""}
-        })
-      }>
+      <button onClick={() => handleFilterChange("type", "")}>
         all
       </button>
 
